@@ -226,6 +226,10 @@ export type VisualizationSettings = {
   "pie.colors"?: Record<string, string>;
 
   [key: string]: any;
+} & IFrameVisualizationSettings;
+
+export type IFrameVisualizationSettings = {
+  iframe?: string;
 };
 
 export interface ModerationReview {
