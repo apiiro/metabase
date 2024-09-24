@@ -1,10 +1,7 @@
 import _ from "underscore";
 
 import { getNativePermissionDisabledTooltip } from "metabase/admin/permissions/selectors/data-permissions/shared";
-import {
-  getFieldsPermission,
-  getTablesPermission,
-} from "metabase/admin/permissions/utils/graph";
+import { getFieldsPermission } from "metabase/admin/permissions/utils/graph";
 import {
   PLUGIN_ADMIN_PERMISSIONS_TABLE_FIELDS_ACTIONS,
   PLUGIN_ADMIN_PERMISSIONS_TABLE_FIELDS_CONFIRMATIONS,
@@ -18,12 +15,12 @@ import type { Group, GroupsPermissions } from "metabase-types/api";
 
 import { DATA_PERMISSION_OPTIONS } from "../../constants/data-permissions";
 import { UNABLE_TO_CHANGE_ADMIN_PERMISSIONS } from "../../constants/messages";
-import type { PermissionSectionConfig, TableEntityId } from "../../types";
-import {
-  DataPermission,
-  DataPermissionType,
-  DataPermissionValue,
+import type {
+  type DataPermissionValue,
+  PermissionSectionConfig,
+  TableEntityId,
 } from "../../types";
+import { DataPermission, DataPermissionType } from "../../types";
 import {
   getPermissionWarning,
   getPermissionWarningModal,
@@ -125,13 +122,6 @@ const buildNativePermission = (
   permissions: GroupsPermissions,
   accessPermissionValue: DataPermissionValue,
 ): PermissionSectionConfig => {
-  const schemaValue = getTablesPermission(
-    permissions,
-    groupId,
-    entityId,
-    DataPermission.CREATE_QUERIES,
-  );
-
   const value = getFieldsPermission(
     permissions,
     groupId,
@@ -151,14 +141,16 @@ const buildNativePermission = (
     disabledTooltip,
     isHighlighted: isAdmin,
     value,
-    options: _.compact([
-      schemaValue === DataPermissionValue.QUERY_BUILDER_AND_NATIVE &&
-        DATA_PERMISSION_OPTIONS.queryBuilderAndNative,
+    options: [
+      DATA_PERMISSION_OPTIONS.queryBuilderAndNative,
       DATA_PERMISSION_OPTIONS.queryBuilder,
       DATA_PERMISSION_OPTIONS.no,
-    ]),
-    confirmations: () => [
+    ],
+    confirmations: (newValue: DataPermissionValue) => [
       getWillRevokeNativeAccessWarningModal(permissions, groupId, entityId),
+      ...PLUGIN_ADMIN_PERMISSIONS_TABLE_FIELDS_CONFIRMATIONS.map(confirmation =>
+        confirmation(permissions, groupId, entityId, newValue),
+      ),
     ],
   };
 };
