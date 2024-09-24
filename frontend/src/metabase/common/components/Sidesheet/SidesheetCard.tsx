@@ -17,7 +17,7 @@ export const SidesheetCard = ({
     <Paper p="lg" withBorder shadow="none" {...paperProps}>
       {title && (
         <Title lh={1} mb=".75rem" size="sm" color="text-light">
-          {children}
+          {title}
         </Title>
       )}
       <Stack spacing="md" className={CS.textMedium}>
