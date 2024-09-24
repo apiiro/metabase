@@ -16,7 +16,7 @@ import type { Group, GroupsPermissions } from "metabase-types/api";
 import { DATA_PERMISSION_OPTIONS } from "../../constants/data-permissions";
 import { UNABLE_TO_CHANGE_ADMIN_PERMISSIONS } from "../../constants/messages";
 import type {
-  type DataPermissionValue,
+  DataPermissionValue,
   PermissionSectionConfig,
   TableEntityId,
 } from "../../types";
