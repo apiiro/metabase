@@ -1,9 +1,7 @@
 import type React from "react";
 
 import CS from "metabase/css/core/index.css";
-import { Paper, type PaperProps, Stack } from "metabase/ui";
-
-import { SidesheetCardTitle } from "./components/SidesheetCardTitle";
+import { Paper, type PaperProps, Stack, Title } from "metabase/ui";
 
 type SidesheetCardProps = {
   title?: React.ReactNode;
@@ -17,7 +15,11 @@ export const SidesheetCard = ({
 }: SidesheetCardProps) => {
   return (
     <Paper p="lg" withBorder shadow="none" {...paperProps}>
-      {title && <SidesheetCardTitle>{title}</SidesheetCardTitle>}
+      {title && (
+        <Title lh={1} mb=".75rem" size="sm" color="text-light">
+          {children}
+        </Title>
+      )}
       <Stack spacing="md" className={CS.textMedium}>
         {children}
       </Stack>
