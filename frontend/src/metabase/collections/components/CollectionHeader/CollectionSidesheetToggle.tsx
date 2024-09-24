@@ -18,11 +18,12 @@ export const CollectionSidesheetToggle = ({
       <CollectionHeaderButton onClick={() => setShowSidesheet(open => !open)}>
         <Icon name="info" />
       </CollectionHeaderButton>
-      <CollectionSidesheet
-        isOpen={showSidesheet}
-        onClose={() => setShowSidesheet(false)}
-        collection={collection}
-      />
+      {showSidesheet && (
+        <CollectionSidesheet
+          onClose={() => setShowSidesheet(false)}
+          collection={collection}
+        />
+      )}
     </>
   );
 };
