@@ -46,7 +46,7 @@
   com.fasterxml.jackson.core/jackson-databind
   {:mvn/version "2.17.2"}             ; JSON processor used by snowplow-java-tracker
   com.fasterxml.woodstox/woodstox-core      {:mvn/version "7.0.0"}              ; trans dep of commons-codec
-  com.h2database/h2                         ^:antq/exclude
+  com.h2database/h2                         ^:antq/exclude                      ; https://metaboat.slack.com/archives/CKZEMT1MJ/p1727191010259979
                                             {:mvn/version "2.1.214"}            ; embedded SQL database
   com.gfredericks/test.chuck                {:mvn/version "0.2.14"}             ; generating strings from regex
   com.snowplowanalytics/snowplow-java-tracker
@@ -81,8 +81,8 @@
                                              :git/sha "bf0b3c1"
                                              :git/url "https://github.com/eerohele/pp"}
   io.github.metabase/macaw                  {:mvn/version "0.2.12"}             ; Parse native SQL queries
-  ;; The 2.X line of Resilience4j requires Java 17, so we cannot upgrade this dependency until that is our minimum JVM version
-  io.github.resilience4j/resilience4j-retry ^:antq/exclude {:mvn/version "1.7.1" #_"must be 1.7.1"} ; Support for retrying operations
+  io.github.resilience4j/resilience4j-retry ^:antq/exclude                      ; 2.x do not support Java 8
+                                            {:mvn/version "1.7.1"}              ; Support for retrying operations
   io.prometheus/simpleclient_hotspot        {:mvn/version "0.16.0"}             ; prometheus jvm collector
   io.prometheus/simpleclient_jetty          {:mvn/version "0.16.0"}             ; prometheus jetty collector
   javax.servlet/servlet-api                 {:mvn/version "2.5"}                ; used by ring's multipart-params (file upload)
@@ -144,7 +144,7 @@
   org.clojure/core.match                    {:mvn/version "1.1.0"}
   org.clojure/core.memoize                  {:mvn/version "1.1.266"}            ; useful FIFO, LRU, etc. caching mechanisms
   org.clojure/data.csv                      {:mvn/version "1.1.0"}              ; CSV parsing / generation
-  org.clojure/data.xml                      {:mvn/version "0.2.0-alpha9"}              ; XML parsing / generation
+  org.clojure/data.xml                      {:mvn/version "0.2.0-alpha9"}       ; XML parsing / generation
   org.clojure/java.classpath                {:mvn/version "1.1.0"}              ; examine the Java classpath from Clojure programs
   org.clojure/java.jdbc                     {:mvn/version "0.7.12"}             ; basic JDBC access from Clojure
   org.clojure/java.jmx                      {:mvn/version "1.1.0"}              ; JMX bean library, for exporting diagnostic info
@@ -156,21 +156,18 @@
   org.clojure/tools.namespace               {:mvn/version "1.5.0"}
   org.clojure/tools.reader                  {:mvn/version "1.5.0"}
   org.clojure/tools.trace                   {:mvn/version "0.8.0"}              ; function tracing
-  ;; v. 12 of jetty-server triggers "a org/eclipse/jetty/io/EofException has been compiled by a more recent version of
-  ;; the Java Runtime (class file version 61.0), this version of the Java Runtime only recognizes class file versions
-  ;; up to 55.0"
-  org.eclipse.jetty/jetty-server            ^:antq/exclude
-                                            {:mvn/version "11.0.22" #_"must be 11"} ; web server
+  org.eclipse.jetty/jetty-server            ^:antq/exclude                      ; 12.x do not support Java 8
+                                            {:mvn/version "11.0.22"}            ; web server
   org.eclipse.jetty.websocket/websocket-jetty-server {:mvn/version "11.0.24"}   ; ring-jetty-adapter needs that
-  org.flatland/ordered                      {:mvn/version "1.15.12"}            ; ordered maps & sets
-  org.graalvm.js/js                         ^:antq/exclude
-                                            {:mvn/version "22.3.5"} ; JavaScript engine
+  org.flatland/ordered                      ^:antq/exclude                      ; conflicts with depstar https://github.com/juxt/tick/issues/170 (nevermind the issue is from another repo)
+                                            {:mvn/version "1.15.10"}            ; ordered maps & sets
+  org.graalvm.js/js                         ^:antq/exclude                      ; newer GraalVM is not compatible with Java 8
+                                            {:mvn/version "22.3.5"}             ; JavaScript engine
   org.jsoup/jsoup                           {:mvn/version "1.18.1"}             ; required by hickory
-  org.liquibase/liquibase-core              ^antq/exclude
+  org.liquibase/liquibase-core              ^antq/exclude                       ; FIXME: no idea why
                                             {:mvn/version "4.26.0"              ; migration management (Java lib)
                                              :exclusions  [ch.qos.logback/logback-classic]}
-  ;; The 3.X line of development for mariadb-java-client only supports the jdbc:mariadb protocol, so use 2.X for now.
-  org.mariadb.jdbc/mariadb-java-client      ^:antq/exclude
+  org.mariadb.jdbc/mariadb-java-client      ^:antq/exclude                      ; 3.x only support jdbc:mariadb, so using 2.x for now
                                             {:mvn/version "2.7.10"}             ; MySQL/MariaDB driver
   org.mindrot/jbcrypt                       {:mvn/version "0.4"}                ; Crypto library
   org.postgresql/postgresql                 {:mvn/version "42.7.4"}             ; Postgres driver
