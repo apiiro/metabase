@@ -123,7 +123,7 @@
   org.apache.poi/poi-ooxml                  {:mvn/version "5.2.5"
                                              :exclusions  [org.bouncycastle/bcpkix-jdk15on
                                                            org.bouncycastle/bcprov-jdk15on]}
-  org.apache.sshd/sshd-core                 {:mvn/version "2.11.0"              ; ssh tunneling and test server
+  org.apache.sshd/sshd-core                 {:mvn/version "2.12.0"              ; ssh tunneling and test server
                                              :exclusions  [org.slf4j/slf4j-api
                                                            org.slf4j/jcl-over-slf4j]}
   org.apache.xmlgraphics/batik-all          {:mvn/version "1.17"}               ; SVG -> image
@@ -192,7 +192,7 @@
  :paths
  ["src" "resources"]
 
- ;; These are needed for the Athena and Redshift drivers if you are developing against them locally. If those drivers'
+ ;; These are needed for the  and Redshift drivers if you are developing against them locally. If those drivers'
  ;; dependencies are not included (i.e., if we don't have the `:drivers` profile), these repos are effectively
  ;; ignored.
  ;;
