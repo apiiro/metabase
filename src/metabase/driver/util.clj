@@ -515,8 +515,7 @@
 
 (def official-drivers
   "The set of all official drivers"
-  #{"athena"
-    "bigquery-cloud-sdk"
+  #{"bigquery-cloud-sdk"
     "druid"
     "googleanalytics"
     "h2"

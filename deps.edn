@@ -203,8 +203,7 @@
  ;; https://ask.clojure.org/index.php/12367/support-mvn-repos-inside-an-alias -- if we could, this could go in the
  ;; `:drivers` alias instead.
  :mvn/repos
- {"athena"   {:url "https://s3.amazonaws.com/maven-athena"}
-  "redshift" {:url "https://s3.amazonaws.com/redshift-maven-repository/release"}
+ {"redshift" {:url "https://s3.amazonaws.com/redshift-maven-repository/release"}
   ;; for metabase/saml20-clj
   "opensaml" {:url "https://build.shibboleth.net/nexus/content/repositories/releases/"}}
 
@@ -379,8 +378,7 @@
   ;;    clojure -X:dev:ee:ee-dev:drivers:drivers-dev:test (for EE)
   :drivers-dev
   {:extra-paths
-   ["modules/drivers/athena/test"
-    "modules/drivers/bigquery-cloud-sdk/test"
+   ["modules/drivers/bigquery-cloud-sdk/test"
     "modules/drivers/druid/test"
     "modules/drivers/googleanalytics/test"
     "modules/drivers/mongo/test"
@@ -405,7 +403,6 @@
    :main-opts  ["-m" "clj-check.check"
                 "src"
                 "enterprise/backend/src"
-                "modules/drivers/athena/src"
                 "modules/drivers/bigquery-cloud-sdk/src"
                 "modules/drivers/druid/src"
                 "modules/drivers/googleanalytics/src"
@@ -427,7 +424,6 @@
                ;; errors in the test paths (once PR #17193 is merged)
                :source-paths    ["src"
                                  "enterprise/backend/src"
-                                 "modules/drivers/athena/src"
                                  "modules/drivers/bigquery-cloud-sdk/src"
                                  "modules/drivers/druid/src"
                                  "modules/drivers/googleanalytics/src"
