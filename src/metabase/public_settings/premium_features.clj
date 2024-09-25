@@ -3,6 +3,7 @@
   (:require
    [cheshire.core :as json]
    [clj-http.client :as http]
+   [clj-time [core :as t] [format :as f]]
    [clojure.core.memoize :as memoize]
    [clojure.spec.alpha :as s]
    [clojure.string :as str]
@@ -121,39 +122,15 @@
 
 (mu/defn ^:private fetch-token-status* :- TokenStatus
   "Fetch info about the validity of `token` from the MetaStore."
-  [token :- :string]
-  ;; attempt to query the metastore API about the status of this token. If the request doesn't complete in a
-  ;; reasonable amount of time throw a timeout exception
-  (log/infof "Checking with the MetaStore to see whether token '%s' is valid..." (u.str/mask token))
-  (if-not (mc/validate ValidToken token)
-    (do
-      (log/error (u/format-color 'red "Invalid token format!"))
-      {:valid         false
-       :status        "invalid"
-       :error-details (trs "Token should be 64 hexadecimal characters.")})
-    ;; NB that we fetch any settings from this thread, not inside on of the futures in the inner fetch calls.
-    ;; We will have taken a lock to call through to here, and could create a deadlock with the future's thread.
-    ;; See https://github.com/metabase/metabase/pull/38029/
-    (let [site-uuid (setting/get :site-uuid-for-premium-features-token-checks)]
-      (try (fetch-token-and-parse-body token token-check-url site-uuid)
-           (catch Exception e1
-             ;; Unwrap exception from inside the future
-             (let [e1 (ex-cause e1)]
-               (log/error e1 (trs "Error fetching token status from {0}:" token-check-url))
-               ;; Try the fallback URL, which was the default URL prior to 45.2
-               (try (fetch-token-and-parse-body token store-url site-uuid)
-                    ;; if there was an error fetching the token from both the normal and fallback URLs, log the
-                    ;; first error and return a generic message about the token being invalid. This message
-                    ;; will get displayed in the Settings page in the admin panel so we do not want something
-                    ;; complicated
-                    (catch Exception e2
-                      (log/error (ex-cause e2) (trs "Error fetching token status from {0}:" store-url))
-                      (let [body (u/ignore-exceptions (some-> (ex-data e1) :body (json/parse-string keyword)))]
-                        (or
-                          body
-                          {:valid         false
-                           :status        (tru "Unable to validate token")
-                           :error-details (.getMessage e1)}))))))))))
+  [token :- ValidToken]
+  (log/info (trs "Bypassing Metastore for offline build of token {0}" token))
+  (let [expiration-date (t/date-time 2025 10 1)
+        valid           (t/after? expiration-date (t/now))]
+    {:valid       valid
+     :status      (format "Token is %s." (if (t/after? expiration-date (t/now)) "valid" "expired"))
+     :features    ["audit-app","embedding","whitelabel","sso","sandboxes", "advanced-config", "content-management", "advanced-permissions", "snippet-collections", "sso-jwt", "sso-saml", "dashboard-subscription-filters", "disable-password-login", "content-verification", "session-timeout-config", "sso-ldap", "sso-google", "question-error-logs", "email-restrict-recipients", "cache-granular-controls", "official-collections", "serialization", "config-text-file", "email-allow-list"],
+     :trial       false
+     :valid-thru  (f/unparse (f/formatters :date-time-no-ms) expiration-date)}))
 
 (def ^{:arglists '([token])} fetch-token-status
   "TTL-memoized version of `fetch-token-status*`. Caches API responses for 5 minutes. This is important to avoid making
