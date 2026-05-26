@@ -2,6 +2,7 @@
   (:require
    [clojure.java.io :as io]
    [clojure.string :as str]
+   [metabase.config :as config]
    [metabase.models.database :refer [Database]]
    [metabase.plugins :as plugins]
    [metabase.sync :as sync]
@@ -18,6 +19,15 @@
 (def ^:private ^String sample-database-name     "Sample Database")
 (def ^:private ^String sample-database-filename "sample-database.db.mv.db")
 
+(defn- sample-db-credentials-suffix
+  "Build the `;USER=...;PASSWORD=...` suffix used to connect to the bundled Sample Database. The values are sourced
+  from `MB_SAMPLE_DATABASE_USER` / `MB_SAMPLE_DATABASE_PASSWORD` so deployments that rebuild the H2 artifact with
+  rotated credentials can override them; the defaults still match the GUEST account baked into the shipped
+  read-only sample DB file."
+  []
+  (str ";USER=" (config/config-str :mb-sample-database-user)
+       ";PASSWORD=" (config/config-str :mb-sample-database-password)))
+
 ;; Reuse the plugins directory for the destination to extract the sample database because it's pretty much guaranteed
 ;; to exist and be writable.
 (defn- target-path
@@ -27,9 +37,9 @@
 (defn- process-sample-db-path
   [base-path]
   (-> base-path
-      (str/replace #"\.mv\.db$" "")        ; strip the .mv.db suffix from the path
-      codec/url-decode                     ; for some reason the path can get URL-encoded so we decode it here
-      (str ";USER=GUEST;PASSWORD=guest"))) ; specify the GUEST user account created for the DB
+      (str/replace #"\.mv\.db$" "")               ; strip the .mv.db suffix from the path
+      codec/url-decode                            ; for some reason the path can get URL-encoded so we decode it here
+      (str (sample-db-credentials-suffix))))      ; append the GUEST user credentials for the bundled sample DB
 
 (defn- jar-db-details
   [^URL resource]
