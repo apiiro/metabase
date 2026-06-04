@@ -166,7 +166,7 @@ export const QA_POSTGRES_PORT = 5404;
 export const QA_DB_CREDENTIALS = {
   host: "localhost",
   user: "metabase",
-  password: "metasample123",
+  password: process.env.QA_DB_PASSWORD || "metasample123",
   database: "sample",
   ssl: false,
 };
