@@ -106,7 +106,7 @@
 
 (defmethod sql-jdbc.conn/connection-details->spec :sqlserver
   [_ {:keys [user password db host port instance domain ssl]
-      :or   {user "dbuser", password "dbpassword", db "", host "localhost"}
+      :or   {user "dbuser", password "", db "", host "localhost"}
       :as   details}]
   (-> {:applicationName    config/mb-version-and-process-identifier
        :subprotocol        "sqlserver"
