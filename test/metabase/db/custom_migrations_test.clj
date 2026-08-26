@@ -2008,7 +2008,7 @@
          {:first_name    "Rasta"
           :last_name     "Toucan"
           :email         "rasta@metabase.com"
-          :password      "password"
+          :password      "superstrong"
           :password_salt "and pepper"
           :date_joined   :%now})
         (migrate!)
